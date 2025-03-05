@@ -8,7 +8,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Consumes("application/json")] //default
 [Produces("application/json")] //default
-public class PersonController(
+public class PeopleController(
    IPeopleRepository peopleRepository,
    IDataContext dataContext
    //ILogger<PersonController> logger
