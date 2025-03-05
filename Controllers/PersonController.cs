@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 [Consumes("application/json")] //default
 [Produces("application/json")] //default
 public class PersonController(
-   IPersonRepository personRepository,
+   IPeopleRepository peopleRepository,
    IDataContext dataContext
    //ILogger<PersonController> logger
 ) : ControllerBase {
@@ -17,7 +17,7 @@ public class PersonController(
    // Get all people 
    [HttpGet("people")]  
    public ActionResult<IEnumerable<Person>> GetAll() {
-      var people = personRepository.SelectAll();
+      var people = peopleRepository.SelectAll();
       return Ok(people);
    }
    
@@ -32,7 +32,7 @@ public class PersonController(
       //    case null:
       //       return NotFound("Owner with given Id not found");
       // };
-      return personRepository.FindById(id) switch {
+      return peopleRepository.FindById(id) switch {
          Person person => Ok(person),
          null => NotFound("Person with given id not found")
       };
@@ -43,7 +43,7 @@ public class PersonController(
    public ActionResult<Person> GetByName(
       [FromQuery] string name
    ) {
-      return personRepository.FindByName(name) switch {
+      return peopleRepository.FindByName(name) switch {
          Person person => Ok(person),
          null => NotFound("Person with given name not found")
       };
@@ -54,7 +54,7 @@ public class PersonController(
    public ActionResult<Person> GetByEmail(
       [FromQuery] string email
    ) {
-      return personRepository.FindByEmail(email) switch {
+      return peopleRepository.FindByEmail(email) switch {
          Person person => Ok(person),
          null => NotFound("Person with given EMail not found")
       };
@@ -65,42 +65,45 @@ public class PersonController(
    public ActionResult<Person> Create(
       [FromBody] Person person
    ) {
-      // apply changes and save
-      personRepository.Add(person);
-      dataContext.SaveChanges();
+      // add to repository and save changes
+      peopleRepository.Add(person);
+      dataContext.SaveAllChanges();
       
       return Created($"/people/{person.Id}", person);
    }
    
    // Update a person 
-   [HttpPut("people/{id}")]
+   [HttpPut("people/{id:guid}")]
    public ActionResult<Person> Update(
-      Guid id,
-      [FromBody] Person updPerson
+      [FromRoute] Guid id,
+      [FromBody]  Person updPerson
    ) {
-      var person = personRepository.FindById(id);
+      // find person by id
+      var person = peopleRepository.FindById(id);
       if (person == null) return NotFound();
-      
       // update domain model
       person.Update(updPerson);
       
-      // apply changes and save
-      personRepository.Update(person);
-      dataContext.SaveChanges();
+      // update  repository and save changes
+      peopleRepository.Update(person);
+      dataContext.SaveAllChanges();
       
       return Ok(person);
    }
 
-   // Delete a person   http://localhost:5100/people/{id}
-   [HttpDelete("people/{id}")]
-   public IActionResult Delete(Guid id) {
+   // Delete a person   
+   
+   [HttpDelete("people/{id:guid}")]
+   public IActionResult Delete(
+      [FromRoute] Guid id
+   ) {
       // find person by id
-      var person = personRepository.FindById(id);
+      var person = peopleRepository.FindById(id);
       if (person == null) return NotFound();
       
-      // apply changes and save
-      personRepository.Remove(person);
-      dataContext.SaveChanges();
+      // remove in repository and save changes
+      peopleRepository.Remove(person);
+      dataContext.SaveAllChanges();
       
       return NoContent();
    }

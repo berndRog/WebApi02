@@ -2,9 +2,9 @@ using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
 namespace WebApi.Data.Repositories;
 
-public class PersonRepository(
+public class PeopleRepository(
    IDataContext dataContext   
-): IPersonRepository {
+): IPeopleRepository {
 
    public Person? FindById(Guid id) =>
       dataContext.People.FirstOrDefault(person => person.Id == id);

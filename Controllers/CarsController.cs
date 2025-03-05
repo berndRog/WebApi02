@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [Produces("application/json")] //default
 
 public class CarsController(
-   IPersonRepository personRepository,
-   ICarRepository carRepository,
+   IPeopleRepository peopleRepository,
+   ICarsRepository carsRepository,
    IDataContext dataContext
 ) : ControllerBase {
    
@@ -21,20 +21,20 @@ public class CarsController(
       [FromBody]  Car car
    ) {
       // find person
-      var person = personRepository.FindById(personId);
+      var person = peopleRepository.FindById(personId);
       if (person == null)
          return BadRequest("Bad request: personId doesn't exists.");
 
       // check if car with given Id already exists   
-      if(carRepository.FindById(car.Id) != null) 
+      if(carsRepository.FindById(car.Id) != null) 
          return Conflict("Car with given Id already exists");
       
       // add car to person in the domain model
       person.AddCar(car);
       
       // add car to repository and save to datastore
-      carRepository.Add(car); 
-      dataContext.SaveChanges();
+      carsRepository.Add(car); 
+      dataContext.SaveAllChanges();
       
       // return created car as Dto
       var requestPath = Request?.Path ?? $"http://localhost:5200/carshop/cars/{car.Id}";

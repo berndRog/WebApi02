@@ -21,8 +21,8 @@ public class Program {
       // Add controllers
       builder.Services.AddControllers();
       
-      builder.Services.AddScoped<IPersonRepository, PersonRepository>();
-      builder.Services.AddScoped<ICarRepository, CarRepository>();
+      builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
+      builder.Services.AddScoped<ICarsRepository, CarsRepository>();
       builder.Services.AddScoped<IDataContext, DataContext>();
       
       var app = builder.Build();

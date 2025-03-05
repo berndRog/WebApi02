@@ -1,7 +1,7 @@
 using WebApi.Core.DomainModel.Entities;
 namespace WebApi.Core;
 
-public interface ICarRepository {
+public interface ICarsRepository {
    ICollection<Car> SelectAll();
    Car? FindById(Guid id);
    void Add(Car car);

@@ -27,7 +27,7 @@ public class DataContext: IDataContext {
       try {
          // Create the directory if it does not exist /Users/rogallab/Webtech/WebApps/WebApp02
          var homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-         var directory = Path.Combine(homeDirectory, "Webtech/WebApis/WebApi01");
+         var directory = Path.Combine(homeDirectory, "Webtech/WebApis/WebApi02");
          if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
          
          // Create the file path
@@ -69,7 +69,7 @@ public class DataContext: IDataContext {
       };
    }
 
-   public void SaveChanges() {
+   public void SaveAllChanges() {
       try {
          var combinedCollections = new {
             People = People, Cars = Cars
