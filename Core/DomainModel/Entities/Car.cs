@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using WebApi.Core.DomainModel.NullEntities;
 namespace WebApi.Core.DomainModel.Entities;
 
@@ -5,13 +6,20 @@ public class Car: AEntity {
    
    // properties with getter only
    public override Guid Id { get; init; } = Guid.NewGuid();
+   [JsonInclude]
    public string Maker {get; private set;} = string.Empty;
+   [JsonInclude]
    public string Model {get; private set;} = string.Empty;
+   [JsonInclude]
    public int Year {get; private set;} = 1900;
+   [JsonInclude]
    public double Price {get; private set;} = 0.0;
+   [JsonInclude]
    public string? ImageUrl { get; private set; } = null;
    // navigation property
+   [JsonInclude]
    public Guid PersonId { get; private set; } = NullPerson.Instance.Id;
+   [JsonInclude]
    public Person Person { get; private set; } = NullPerson.Instance;
 
    // EF Core requires a constructor

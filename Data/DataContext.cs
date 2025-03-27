@@ -9,6 +9,12 @@ namespace WebApi.Data;
 public class DataContext: IDataContext {
    // fake storage with JSON file
    private readonly string _filePath = string.Empty;
+   private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions {
+      PropertyNameCaseInsensitive = true,
+      //ReferenceHandler = ReferenceHandler.Preserve,
+      ReferenceHandler = ReferenceHandler.IgnoreCycles,
+      WriteIndented = true
+   };
    private readonly ILogger<DataContext> _logger;
 
    public ICollection<Person> People { get; } = [];
@@ -42,14 +48,25 @@ public class DataContext: IDataContext {
             };
             var emptyJson = JsonSerializer.Serialize(
                emptyCollections,
-               GetJsonSerializerOptions()
+               _jsonOptions
             );
             File.WriteAllText(_filePath, emptyJson, Encoding.UTF8);
          }
+         // Read the JSON file
          var json = File.ReadAllText(_filePath, Encoding.UTF8);
+         // Prettify the JSON for logging
+         var prettyJson = JsonSerializer.Serialize(
+            value: JsonSerializer.Deserialize<JsonDocument>(json), 
+            options: new JsonSerializerOptions { 
+               PropertyNameCaseInsensitive = true,
+               WriteIndented = true 
+            }
+         );
+         _logger.LogInformation("Deserialize: {json}", prettyJson);
+         // Deserialize the JSON file
          var combinedCollections = JsonSerializer.Deserialize<CombinedCollections>(
             json,
-            GetJsonSerializerOptions()
+            _jsonOptions
          ) ?? throw new ApplicationException("Deserialization failed");
 
          People = combinedCollections.People;
@@ -59,15 +76,6 @@ public class DataContext: IDataContext {
          Console.WriteLine(e.Message);
       }
    }
-   
-   private JsonSerializerOptions GetJsonSerializerOptions() {
-      return new JsonSerializerOptions {
-         PropertyNameCaseInsensitive = true,
-         //ReferenceHandler = ReferenceHandler.Preserve,
-         ReferenceHandler = ReferenceHandler.IgnoreCycles,
-         WriteIndented = true
-      };
-   }
 
    public void SaveAllChanges() {
       try {
@@ -76,8 +84,9 @@ public class DataContext: IDataContext {
          };
          var json = JsonSerializer.Serialize(
             combinedCollections,
-            GetJsonSerializerOptions()
+            _jsonOptions
          );
+         _logger.LogInformation("Serialize: {json}", json);
          File.WriteAllText(_filePath, json, Encoding.UTF8);
       }
       catch (Exception e) {

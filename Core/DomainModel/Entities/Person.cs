@@ -1,34 +1,37 @@
+using System.Text.Json.Serialization;
 namespace WebApi.Core.DomainModel.Entities; 
 
 public class Person: AEntity {
 
    // properties with getter only
    public override Guid Id { get; init; } = Guid.NewGuid();
-   public string FirstName { get; private set; } = string.Empty;
+   [JsonInclude]
+   public string FirstName { get; set; } = string.Empty;
+   [JsonInclude]
    public string LastName { get; private set; } = string.Empty;
+   [JsonInclude]
    public string? Email { get; private set; } = null;
+   [JsonInclude]
    public string? Phone { get; private set; } = null;
-   public string? ImageUrl { get; private set; } = null;
    // navigation property Person -> Car [0..*]
+   [JsonInclude]
    public ICollection<Car> Cars { get; private set; } = [];
    
-   // EF Core requires a constructor
-   internal Person() { }
+   // ctor
+   public Person() { }
    public Person(Guid id, string firstName, string lastName, string? email = null,
-      string? phone = null, string? imageUrl = null) {
+      string? phone = null) {
       Id = id;
       FirstName= firstName;
       LastName = lastName;
       Email = email;
       Phone = phone;
-      ImageUrl = imageUrl;
    }   
    
    // methods
-   public void Set(string? email = null, string? phone = null, string? imageUrl = null) {
+   public void Set(string? email = null, string? phone = null) {
       if(email != null) Email = email;
       if(phone != null) Phone = phone;
-      if(imageUrl != null) ImageUrl = imageUrl;
    } 
    
    public void Update (Person updPerson) {
@@ -36,7 +39,6 @@ public class Person: AEntity {
       LastName = updPerson.LastName;
       if(updPerson.Email != null) Email = updPerson.Email;
       if(updPerson.Phone != null) Phone = updPerson.Phone;
-      if(updPerson.ImageUrl != null) ImageUrl = updPerson.ImageUrl;
    }
    
    // methods car
